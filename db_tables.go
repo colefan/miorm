@@ -6,12 +6,13 @@ import (
 
 // table info struct
 type dbTable struct {
-	TableName             string
-	PrimaryKeys           []*dbColumn
-	Bean                  interface{}
-	Fields                []*dbColumn
-	Field2PropertyMapping map[string]string
-	AutoId                *dbColumn
+	TableName              string
+	PrimaryKeys            []*dbColumn
+	Bean                   interface{}
+	Fields                 []*dbColumn
+	Property2ColumnMapping map[string]string
+	Field2PropertyMapping  map[string]string
+	AutoId                 *dbColumn
 }
 
 type dbColumn struct {
@@ -28,7 +29,9 @@ func newDbTable() *dbTable {
 	t := &dbTable{}
 	t.Fields = make([]*dbColumn, 0, 0)
 	t.PrimaryKeys = make([]*dbColumn, 0, 0)
+	t.Property2ColumnMapping = make(map[string]string)
 	t.Field2PropertyMapping = make(map[string]string)
+
 	return t
 }
 

@@ -70,9 +70,9 @@ func (o *Orm) RawSelect(sql string) ([]map[string]interface{}, error) {
 	return s.RawSelect(sql)
 }
 
-func (o *Orm) Insert(tableBean interface{}) (affecteRows int64, err error) {
+func (o *Orm) Insert(tableBean interface{}, fields ...interface{}) (affecteRows int64, err error) {
 	s := o.NewSession()
-	return s.Insert(tableBean)
+	return s.Insert(tableBean, fields...)
 }
 
 func (o *Orm) MultiInsert(tableBeanSlice []interface{}) (affectedRows int64, err error) {
@@ -202,6 +202,7 @@ func (o *Orm) mappingTable(tableBean interface{}) *dbTable {
 					}
 
 					table.Fields = append(table.Fields, column)
+					table.Property2ColumnMapping[column.Property] = column.Column
 					table.Field2PropertyMapping[column.Column] = column.Property
 				}
 

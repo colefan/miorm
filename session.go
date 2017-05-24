@@ -208,7 +208,7 @@ func (s *Session) RawSelect(sql string) (records []map[string]interface{}, err e
 	return
 }
 
-func (s *Session) Insert(tableBean interface{}) (affectedRows int64, err error) {
+func (s *Session) Insert(tableBean interface{}, fields ...interface{}) (affectedRows int64, err error) {
 	//TODO
 	s.table = s.db.mappingTable(tableBean)
 	s.modelBean = tableBean
@@ -219,14 +219,26 @@ func (s *Session) Insert(tableBean interface{}) (affectedRows int64, err error) 
 
 		strInsert := "insert into " + s.table.TableName + " ("
 		strValues := ""
-		for _, field := range s.table.Fields {
-			v := beanv.FieldByName(field.Property).Interface()
-			if field.IsAutoId {
-				continue
+		if len(fields) > 0 {
+			for _, fieldName := range fields {
+				fieldName := fieldName.(string)
+				v := beanv.FieldByName((fieldName))
+				strFieldName := s.table.Property2ColumnMapping[(fieldName)]
+				strInsert += strFieldName + ","
+				strValues += "?,"
+				s.params = append(s.params, v)
 			}
-			strInsert += field.Column + ","
-			strValues += "?,"
-			s.params = append(s.params, v)
+		} else {
+			for _, field := range s.table.Fields {
+				v := beanv.FieldByName(field.Property).Interface()
+				if field.IsAutoId {
+					continue
+				}
+				strInsert += field.Column + ","
+				strValues += "?,"
+				s.params = append(s.params, v)
+			}
+
 		}
 
 		if strValues == "" {
